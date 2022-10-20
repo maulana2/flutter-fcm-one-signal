@@ -9,40 +9,29 @@ import 'package:http/http.dart' as http;
 class UsersServices {
   List<Passenger> dataPassenger = [];
   Future<List<Passenger>> getDataServices(currentPage) async {
-    /* print('jalan ini');
-    final Uri uri = Uri.parse(
-      'https://api.instantwebtools.net/v1/passenger?page=${currentPage}&size=10',
-    );
-    final response = await http.get(uri);
-    print(uri.toString());
-    if (response.statusCode == 200) {
-      final result = jsonDecode(response.body)['data'] as List;
-      dataPassenger =
-          dataPassenger + result.map((e) => Passenger.fromJson(e)).toList();
-      return dataPassenger;
-    } else {
-      return []; 
-    } */
-
     try {
-      String url =
-          'https://api.instantwebtools.net/v1/passenger?page=${currentPage}&size=10';
+      String url = 'https://reqres.in/api/users?page=2';
       var response = await http.get(Uri.parse(url));
-      print(response.statusCode);
-      if (response.statusCode != 200) {
-        Get.snackbar('Terjadi Kesalahan', 'Kesalahan ${response.statusCode}');
+      var stCode = response.statusCode;
+      print(stCode);
+      switch (stCode) {
+        case 200:
+          final result = jsonDecode(response.body)['data'] as List;
+          dataPassenger =
+              dataPassenger + result.map((e) => Passenger.fromJson(e)).toList();
+          return dataPassenger;
+        
+        default:
       }
-      final result = jsonDecode(response.body)['data'] as List;
-      dataPassenger =
-          dataPassenger + result.map((e) => Passenger.fromJson(e)).toList();
-      return dataPassenger;
     } on SocketException {
       Get.snackbar('Terjadi Kesalahan', 'Tidak ada koneksi Internet');
     } on HttpException {
+      print('Http ex');
       Get.snackbar('Terjadi Kesalahan', 'Tidak dapat menemukan data');
     } on FormatException {
       Get.snackbar('Terjadi Kesalahan', 'Bad response format');
     } catch (e) {
+      print('default try');
       Get.snackbar('Terjadi Kesalahan', 'Kesalahan ${e.toString()}',
           backgroundColor: Colors.red[500]);
     }

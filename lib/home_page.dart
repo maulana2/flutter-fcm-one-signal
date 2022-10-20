@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,7 @@ import 'package:get/get_connect/sockets/src/sockets_io.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:lottie/lottie.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:part3/detail_peminjam.dart';
 import 'package:part3/models/users.dart';
 import 'package:part3/provider/data_users.dart';
@@ -28,9 +30,6 @@ class _HomePageState extends State<HomePage> {
   final DataUsers c = Get.find();
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
-    print('init jalan');
     c.getData();
   }
 
@@ -52,16 +51,40 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
+    floating() {
+      return FloatingActionButton(
+        onPressed: () {
+          c.subscribe();
+        },
+      );
+    }
+
+    unsuscribe() {
+      return ElevatedButton(
+          onPressed: () => c.unsubscribe(), child: Text('Unsuscribe'));
+    }
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: white,
+        floatingActionButton: floating(),
+        bottomSheet: unsuscribe(),
         body: EasyRefresh(
-
           onRefresh: () => c.getData(),
           onLoad: () => c.onRefresh(),
           child: FutureBuilder<RxList<dynamic>>(
             future: c.getData(),
             builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (c.passengers.length == null) {
+                Center(
+                  child: Text('Tidak ada data'),
+                );
+              }
               return Obx(
                 () => ListView.builder(
                   physics: ScrollPhysics(),
@@ -78,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                 ),
-           
+                   
               );
             },
           ),

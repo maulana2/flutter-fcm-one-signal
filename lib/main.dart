@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:part3/fcm.dart';
 import 'package:part3/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -25,8 +26,26 @@ void main() async {
   });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    OneSignal.shared.setNotificationOpenedHandler((openedResult) {
+      print('jalan open handle');
+      print(openedResult.notification.additionalData);
+      var data = openedResult.notification.additionalData;
+      Get.to(Fcm(), arguments: data);
+    });
+    OneSignal.shared.setNotificationWillShowInForegroundHandler((event) {});
+  }
 
   @override
   Widget build(BuildContext context) {

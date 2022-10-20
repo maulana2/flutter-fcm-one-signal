@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
@@ -24,5 +25,15 @@ class DataUsers extends GetxController {
         passengers + await UsersServices().getDataServices(currentPage);
     print(passengers.length);
     return true;
+  }
+
+  void subscribe() async {
+    print('subscribe');
+    await FirebaseMessaging.instance.subscribeToTopic('Maulana');
+  }
+
+  void unsubscribe() async {
+    print('unsubscribe');
+    await FirebaseMessaging.instance.unsubscribeFromTopic('Maulana');
   }
 }
